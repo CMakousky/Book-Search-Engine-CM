@@ -1,26 +1,25 @@
 import User, { UserDocument } from "../models/User";
 import { BookDocument } from "../models/Book";
-import { signToken } from '../services/auth.js';
+import { signToken, AuthenticationError } from '../services/auth.js';
+
+// Argument Types
+interface LoginUserArgs {
+    email: string;
+    password: string;
+}
+
+interface NewUserArgs {
+    newUser: {
+        username: string;
+        email: string;
+        password: string;
+        // savedBooks: BookDocument[];
+    }
+}
 
 const resolvers = {
     Query: {
-        login: async (_parent: any, { username, email, password }:{ username: string, email: string, password: string }) => {
-            const userCredentials = { username, email, password };
-            const user = await User.findOne({ $or: [{ username: userCredentials.username }, { email: userCredentials.email }] });
-
-            if (!user) {
-              return res.status(400).json({ message: "Can't find this user" });
-            }
-          
-            const correctPw = await user.isCorrectPassword(userCredentials.password);
-          
-            if (!correctPw) {
-              return res.status(400).json({ message: 'Wrong password!' });
-            }
-            
-            const token = signToken(user.username, user.email, user._id);
-            return res.json({ token, user });
-        },
+        // get a single user by either their id or their username
         getSingleUser: async (_parent: any, { _id, username }:{ _id: string, username: string }): Promise<UserDocument | null> => {
             const params = _id ? { _id, username } : {};
             return User.findOne({
@@ -29,38 +28,61 @@ const resolvers = {
         },
     },
     Mutation: {
-        createUser: async (req: Request, res: Response) => {
-            const user = await User.create(req.body);
+        // login a user, sign a token, and send it back (to client/src/components/LoginForm.js)
+        login: async (_parent: any, { email, password }: LoginUserArgs) => {
+            // Find a user with the provided email
+            const user = await User.findOne({ email });
           
+            // If no user is found, throw an AuthenticationError
             if (!user) {
-              return res.status(400).json({ message: 'Something is wrong!' });
+              throw new AuthenticationError('Could not authenticate user.');
             }
-            const token = signToken(user.username, user.password, user._id);
-            return res.json({ token, user });
+          
+            // Check if the provided password is correct
+            const correctPw = await user.isCorrectPassword(password);
+          
+            // If the password is incorrect, throw an AuthenticationError
+            if (!correctPw) {
+              throw new AuthenticationError('Could not authenticate user.');
+            }
+          
+            // Sign a token with the user's information
+            const token = signToken(user.username, user.email, user._id);
+          
+            // Return the token and the user
+            return { token, user };
         },
-        saveBook: async (req: Request, res: Response) => {
-            try {
+        // create a user, sign a token, and send it back (to client/src/components/SignUpForm.js)
+        createUser: async (_parent: any, { newUser }: NewUserArgs) => {
+            const user = await User.create({ ...newUser });
+          
+            const token = signToken(user.username, user.email, user._id);
+
+            return { token, user };
+        },
+        // save a book to a user's `savedBooks` field by adding it to the set (to prevent duplicates)
+        saveBook: async (_parent: any, saveBookArgs: BookDocument, context: any) => {
+            if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
-                { _id: req.user._id },
-                { $addToSet: { savedBooks: req.body } },
+                { _id: context.user._id },
+                { $addToSet: { savedBooks: saveBookArgs } },
                 { new: true, runValidators: true }
               );
-              return res.json(updatedUser);
-            } catch (err) {
-              console.log(err);
-              return res.status(400).json(err);
+              return updatedUser;
             }
+            throw AuthenticationError;
         },
-        deleteBook: async (req: Request, res: Response) => {
+        // remove a book from `savedBooks`
+        deleteBook: async (_parent: any, deleteBookArgs: BookDocument, context: any) => {
             const updatedUser = await User.findOneAndUpdate(
-              { _id: req.user._id },
-              { $pull: { savedBooks: { bookId: req.params.bookId } } },
+              { _id: context.user._id },
+              { $pull: { savedBooks: { bookId: deleteBookArgs.bookId } } },
               { new: true }
             );
             if (!updatedUser) {
-              return res.status(404).json({ message: "Couldn't find user with this id!" });
+                throw AuthenticationError;
             }
-            return res.json(updatedUser);
+            return updatedUser;
         },
     },
 };

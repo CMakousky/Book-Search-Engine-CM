@@ -18,9 +18,36 @@ const typeDefs = `
         title: String!
     }
 
-    type Query {}
+    type Auth {
+        token: ID!
+        user: User
+    }
+    
+    input NewUser {
+        username: String!
+        email: String!
+        password: String!
+    }
 
-    type Mutation {}
+    input AddBook {
+        authors: [String]
+        description: String!
+        bookId: String!
+        image: String
+        link: String
+        title: String!
+    }
+
+    type Query {
+        user(_id: String!, username: String): User
+    }
+
+    type Mutation {
+        login(email: String!, password: String!): Auth
+        createUser(input: NewUser!): Auth
+        saveBook(input: AddBook!): Book
+        deleteBook(bookId: ID!): Book
+    }
 `;
 
 export default typeDefs;
