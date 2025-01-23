@@ -1,5 +1,5 @@
-import User, { UserDocument } from "../models/User";
-import { BookDocument } from "../models/Book";
+import User, { UserDocument } from "../models/User.js";
+import { BookDocument } from "../models/Book.js";
 import { signToken, AuthenticationError } from '../services/auth.js';
 
 // Argument Types
