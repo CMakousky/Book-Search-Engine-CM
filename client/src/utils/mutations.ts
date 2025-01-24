@@ -29,26 +29,22 @@ export const DELETE_BOOK = gql `
 mutation DeleteBook($bookId: ID!) {
   deleteBook(bookId: $bookId) {
     title
-    link
     image
     description
     bookId
     authors
-    _id
   }
 }
 `;
 
 export const ADD_BOOK = gql `
-mutation SaveBook($input: AddBook!) {
-  saveBook(input: $input) {
-    title
-    link
-    image
-    description
-    bookId
+mutation SaveBook($authors: [String], $image: String, $title: String!, $bookId: String!, $description: String!) {
+  saveBook(authors: $authors, image: $image, title: $title, bookId: $bookId, description: $description) {
     authors
-    _id
+    bookId
+    description
+    image
+    title
   }
 }
 `;
