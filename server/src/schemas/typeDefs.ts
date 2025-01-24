@@ -22,12 +22,6 @@ const typeDefs = `
         token: ID!
         user: User
     }
-    
-    input NewUser {
-        username: String!
-        email: String!
-        password: String!
-    }
 
     input AddBook {
         authors: [String]
