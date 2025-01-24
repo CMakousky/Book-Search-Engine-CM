@@ -9,12 +9,10 @@ interface LoginUserArgs {
 }
 
 interface NewUserArgs {
-    newUser: {
-        username: string;
-        email: string;
-        password: string;
-        // savedBooks: BookDocument[];
-    }
+    username: string;
+    email: string;
+    password: string;
+    // savedBooks: BookDocument[];
 }
 
 const resolvers = {
@@ -55,8 +53,8 @@ const resolvers = {
             return { token, user };
         },
         // create a user, sign a token, and send it back (to client/src/components/SignUpForm.js)
-        createUser: async (_parent: any, { newUser }: NewUserArgs) => {
-            const user = await User.create({ ...newUser });
+        createUser: async (_parent: any, { username, email, password }: NewUserArgs) => {
+            const user = await User.create({ username, email, password });
           
             const token = signToken(user.username, user.email, user._id);
 
