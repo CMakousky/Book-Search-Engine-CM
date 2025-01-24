@@ -6,6 +6,10 @@ import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 import type { User } from '../models/User';
 
+// import { useQuery, useMutation } from '@apollo/client';
+// import { GET_SINGLE_USER } from '../utils/queries';
+// import { DELETE_BOOK } from '../utils/mutations';
+
 const SavedBooks = () => {
   const [userData, setUserData] = useState<User>({
     username: '',
