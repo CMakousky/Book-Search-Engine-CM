@@ -5,11 +5,11 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// interface JwtPayload {
-//   _id: unknown;
-//   username: string;
-//   email: string,
-// }
+interface JwtPayload {
+  _id: unknown;
+  username: string;
+  email: string,
+}
 
 // export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 //   const authHeader = req.headers.authorization;
@@ -69,11 +69,11 @@ export const authenticateToken = ({ req }: any) => {
 
 export const signToken = (username: string, email: string, _id: unknown) => {
   // Create a payload with the user information
-  const payload = { username, email, _id };
+  const payload = { username, email, _id } as JwtPayload;
   const secretKey: any = process.env.JWT_SECRET_KEY; // Get the secret key from environment variables
 
   // Sign the token with the payload and secret key, and set it to expire in 2 hours
-  return jwt.sign({ data: payload }, secretKey, { expiresIn: '2h' });
+  return jwt.sign(payload, secretKey, { expiresIn: '2h' });
 };
 
 export class AuthenticationError extends GraphQLError {

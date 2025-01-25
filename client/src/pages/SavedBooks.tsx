@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
 
-import { getMe, deleteBook } from '../utils/API';
+import { deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 import type { User } from '../models/User';
 
-// import { useQuery, useMutation } from '@apollo/client';
-// import { GET_SINGLE_USER } from '../utils/queries';
+import { useQuery } from '@apollo/client';
+import { GET_ME } from '../utils/queries';
 // import { DELETE_BOOK } from '../utils/mutations';
+
+interface JwtPayload {
+  _id: unknown;
+  username: string;
+  email: string,
+}
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState<User>({
@@ -21,6 +27,25 @@ const SavedBooks = () => {
   // use this to determine if `useEffect()` hook needs to run again
   const userDataLength = Object.keys(userData).length;
 
+  const profile: JwtPayload = Auth.getProfile() as JwtPayload;
+  console.log("token:", profile);
+
+  const { loading, data } = useQuery(GET_ME, { variables: { _id: profile._id, username: profile.username } });
+  
+  if (loading) {console.log("Loading:", loading)};
+  console.log(data);
+
+  if (data) {
+    const user = {
+      username: data.getSingleUser.username,
+      email: data.getSingleUser.email,
+      password: '',
+      savedBooks: data.getSingleUser.savedBooks,
+    };
+  
+    console.log("user:", user);
+  };
+
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -30,14 +55,15 @@ const SavedBooks = () => {
           return false;
         }
 
-        const response = await getMe(token);
+      //   const response = await getMe(token);
 
-        if (!response.ok) {
-          throw new Error('something went wrong!');
-        }
+      //   if (!response.ok) {
+      //     throw new Error('something went wrong!');
+      //   }
 
-        const user = await response.json();
-        setUserData(user);
+      //   const user = await response.json();
+
+        // setUserData(user);
       } catch (err) {
         console.error(err);
       }

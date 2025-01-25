@@ -15,15 +15,19 @@ interface NewUserArgs {
     // savedBooks: BookDocument[];
 }
 
+interface MyBooksArgs {
+  _id: any;
+  username: string;
+}
+
 const resolvers = {
     Query: {
         // get a single user by either their id or their username
-        getSingleUser: async (_parent: any, { _id, username }:{ _id: string, username: string }): Promise<UserDocument | null> => {
-            const params = _id ? { _id, username } : {};
+        getSingleUser: async (_parent: any, { _id, username }: MyBooksArgs): Promise<UserDocument | null> => {
+            const params = _id ? { _id } : { username };
             return User.findOne({
               // $or: [{ _id: req.user ? req.user._id : req.params.id }, { username: req.params.username }],
               $or: [{ _id: params._id }, { username: params.username }],
-              // $or: [{ _id: user ? user._id : params._id }, { username: params.username }],
             });
         },
     },
