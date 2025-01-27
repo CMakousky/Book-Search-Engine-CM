@@ -57,7 +57,7 @@ const SavedBooks = () => {
         if (loading) {
           console.log("Loading:", loading);
         } else {
-          console.log("getUserData:", userProfileData);
+          // console.log("getUserData:", userProfileData);
         };
         
         const user: User = {
