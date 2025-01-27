@@ -54,11 +54,11 @@ const SavedBooks = () => {
           throw new Error('something went wrong!');
         };
 
-        if (loading) {
-          console.log("Loading:", loading);
-        } else {
-          // console.log("getUserData:", userProfileData);
-        };
+        // if (loading) {
+        //   console.log("Loading:", loading);
+        // } else {
+        //   console.log("getUserData:", userProfileData);
+        // };
         
         if (!loading) {
           const user: User = {

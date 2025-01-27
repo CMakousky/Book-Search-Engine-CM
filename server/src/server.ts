@@ -3,7 +3,6 @@ import type { Request, Response } from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import db from './config/connection.js';
-// import routes from './routes/index.js';
 
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -42,23 +41,9 @@ const startApolloServer = async () => {
   db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
   app.listen(PORT, () => {
-    console.log(`API server running on port ${PORT}!`);
+    console.log(`🌍 Now listening on port ${PORT}!`);
     console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
   });
 };
 
 startApolloServer();
-
-// app.use(express.urlencoded({ extended: true }));
-// app.use(express.json());
-
-// // if we're in production, serve client/build as static assets
-// if (process.env.NODE_ENV === 'production') {
-//   app.use(express.static(path.join(__dirname, '../client/build')));
-// }
-
-// app.use(routes);
-
-// db.once('open', () => {
-//   app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
-// });
