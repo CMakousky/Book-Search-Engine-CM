@@ -60,14 +60,16 @@ const SavedBooks = () => {
           // console.log("getUserData:", userProfileData);
         };
         
-        const user: User = {
-          username: userProfileData.me.username,
-          email: userProfileData.me.email,
-          password: '',
-          savedBooks: userProfileData.me.savedBooks,
+        if (!loading) {
+          const user: User = {
+            username: userProfileData.me.username,
+            email: userProfileData.me.email,
+            password: '',
+            savedBooks: userProfileData.me.savedBooks,
+          };
+          setUserData(user);
         };
 
-        setUserData(user);
       } catch (err) {
         console.error(err);
       }
