@@ -59,7 +59,7 @@ const resolvers = {
         // create a user, sign a token, and send it back (to client/src/components/SignUpForm.js)
         addUser: async (_parent: any, { username, email, password }: NewUserArgs) => {
             const user = await User.create({ username, email, password });
-            console.log("New User:", user);
+            // console.log("New User:", user);
           
             // Sign a token with the user's information
             const token = signToken(user.username, user.email, user._id);
