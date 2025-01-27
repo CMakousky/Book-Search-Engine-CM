@@ -7,7 +7,7 @@ import Auth from '../utils/auth';
 import type { User } from '../models/User';
 
 import { useMutation } from '@apollo/client';
-import { CREATE_USER } from '../utils/mutations';
+import { ADD_USER } from '../utils/mutations';
 
 // biome-ignore lint/correctness/noEmptyPattern: <explanation>
 const SignupForm = ({}: { handleModalClose: () => void }) => {
@@ -18,7 +18,7 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
 
-  const [createUser, { error }] = useMutation(CREATE_USER);
+  const [addUser, { error }] = useMutation(ADD_USER);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -36,14 +36,14 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
     }
 
     try {
-      // const response = await createUser(userFormData);
-      const { data } = await createUser({ variables: { username: userFormData.username, email: userFormData.email, password: userFormData.password } });
+      // const response = await addUser(userFormData);
+      const { data } = await addUser({ variables: { username: userFormData.username, email: userFormData.email, password: userFormData.password } });
 
       if (error) {
         throw new Error('Something went wrong!');
       };
 
-      Auth.login(data.createUser.token);
+      Auth.login(data.addUser.token);
     } catch (err) {
       console.error(err);
       setShowAlert(true);

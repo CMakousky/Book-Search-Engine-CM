@@ -23,7 +23,7 @@ interface MyBooksArgs {
 const resolvers = {
     Query: {
         // get a single user by either their id or their username
-        getSingleUser: async (_parent: any, { _id, username }: MyBooksArgs): Promise<UserDocument | null> => {
+        me: async (_parent: any, { _id, username }: MyBooksArgs): Promise<UserDocument | null> => {
             const params = _id ? { _id } : { username };
             return User.findOne({
               // $or: [{ _id: req.user ? req.user._id : req.params.id }, { username: req.params.username }],
@@ -33,7 +33,7 @@ const resolvers = {
     },
     Mutation: {
         // login a user, sign a token, and send it back (to client/src/components/LoginForm.js)
-        login: async (_parent: any, { email, password }: LoginUserArgs) => {
+        loginUser: async (_parent: any, { email, password }: LoginUserArgs) => {
             // Find a user with the provided email
             const user = await User.findOne({ email });
           
@@ -57,7 +57,7 @@ const resolvers = {
             return { token, user };
         },
         // create a user, sign a token, and send it back (to client/src/components/SignUpForm.js)
-        createUser: async (_parent: any, { username, email, password }: NewUserArgs) => {
+        addUser: async (_parent: any, { username, email, password }: NewUserArgs) => {
             const user = await User.create({ username, email, password });
             console.log("New User:", user);
           
@@ -79,10 +79,10 @@ const resolvers = {
             throw AuthenticationError;
         },
         // remove a book from `savedBooks`
-        deleteBook: async (_parent: any, deleteBookArgs: BookDocument, context: any) => {
+        removeBook: async (_parent: any, removeBookArgs: BookDocument, context: any) => {
             const updatedUser = await User.findOneAndUpdate(
               { _id: context.user._id },
-              { $pull: { savedBooks: { bookId: deleteBookArgs.bookId } } },
+              { $pull: { savedBooks: { bookId: removeBookArgs.bookId } } },
               { new: true }
             );
             if (!updatedUser) {

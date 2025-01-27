@@ -7,7 +7,7 @@ import type { User } from '../models/User';
 
 import { useMutation, useQuery } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
-import { DELETE_BOOK } from '../utils/mutations';
+import { REMOVE_BOOK } from '../utils/mutations';
 
 interface JwtPayload {
   data: {
@@ -33,11 +33,11 @@ const SavedBooks = () => {
 
   const { loading, data, error, refetch } = useQuery(GET_ME, { variables: { _id: profile.data._id, username: profile.data.username } });
 
-  const getNewData = refetch();
+  const getMe = refetch();
 
   const userProfileData = data;
   
-  const [deleteBook] = useMutation(DELETE_BOOK);
+  const [removeBook] = useMutation(REMOVE_BOOK);
 
   useEffect(() => {
     const getUserData = async () => {
@@ -48,7 +48,7 @@ const SavedBooks = () => {
           return false;
         }
 
-        await getNewData;
+        await getMe;
 
         if (error) {
           throw new Error('something went wrong!');
@@ -61,10 +61,10 @@ const SavedBooks = () => {
         };
         
         const user: User = {
-          username: userProfileData.getSingleUser.username,
-          email: userProfileData.getSingleUser.email,
+          username: userProfileData.me.username,
+          email: userProfileData.me.email,
           password: '',
-          savedBooks: userProfileData.getSingleUser.savedBooks,
+          savedBooks: userProfileData.me.savedBooks,
         };
 
         setUserData(user);
@@ -83,7 +83,7 @@ const SavedBooks = () => {
     }
 
     try {
-      deleteBook({ variables: { bookId } });
+      removeBook({ variables: { bookId } });
 
       if (error) {
         throw new Error('something went wrong!');
