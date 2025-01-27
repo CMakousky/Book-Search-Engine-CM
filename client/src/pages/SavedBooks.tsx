@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
 
-// import { getMe, deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 import type { User } from '../models/User';
@@ -27,18 +26,18 @@ const SavedBooks = () => {
   });
 
   // use this to determine if `useEffect()` hook needs to run again
-  const userDataLength = Object.keys(userData).length;
+  // const userDataLength = Object.keys(userData).length;
 
   const profile: JwtPayload = Auth.getProfile() as JwtPayload;
   // console.log("token:", profile);
 
-  const { loading, data, refetch } = useQuery(GET_ME, { variables: { _id: profile.data._id, username: profile.data.username } });
+  const { loading, data, error, refetch } = useQuery(GET_ME, { variables: { _id: profile.data._id, username: profile.data.username } });
 
   const getNewData = refetch();
 
   const userProfileData = data;
   
-  const [deleteBook] = useMutation(DELETE_BOOK); // { refetchQueries: [GET_ME, 'GetMe'] }
+  const [deleteBook] = useMutation(DELETE_BOOK);
 
   useEffect(() => {
     const getUserData = async () => {
@@ -49,17 +48,11 @@ const SavedBooks = () => {
           return false;
         }
 
-        // const response = await getMe(token);
-
-        // if (!response.ok) {
-        //   throw new Error('something went wrong!');
-        // }
-
-        // const user = await response.json();
-
-        // setUserData(user);
-
         await getNewData;
+
+        if (error) {
+          throw new Error('something went wrong!');
+        };
 
         if (loading) {
           console.log("Loading:", loading);
@@ -90,16 +83,11 @@ const SavedBooks = () => {
     }
 
     try {
-      // const response = await deleteBook(bookId, token);
-
-      // if (!response.ok) {
-      //   throw new Error('something went wrong!');
-      // }
-
-      // const updatedUser = await response.json();
-      // setUserData(updatedUser);
-
       deleteBook({ variables: { bookId } });
+
+      if (error) {
+        throw new Error('something went wrong!');
+      };
 
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
@@ -109,7 +97,7 @@ const SavedBooks = () => {
   };
 
   // if data isn't here yet, say so
-  if (!userDataLength) {
+  if (loading) {
     return <h2>LOADING...</h2>;
   }
 
