@@ -75,20 +75,23 @@ const resolvers = {
                 { new: true, runValidators: true }
               );
               return updatedUser;
-            }
-            throw AuthenticationError;
+            };
+            throw new AuthenticationError('Cannot find context.');
         },
         // remove a book from `savedBooks`
         removeBook: async (_parent: any, removeBookArgs: BookDocument, context: any) => {
-            const updatedUser = await User.findOneAndUpdate(
-              { _id: context.user._id },
-              { $pull: { savedBooks: { bookId: removeBookArgs.bookId } } },
-              { new: true }
-            );
-            if (!updatedUser) {
-                throw AuthenticationError;
-            }
-            return updatedUser;
+            if (context.user) {
+              const updatedUser = await User.findOneAndUpdate(
+                { _id: context.user._id },
+                { $pull: { savedBooks: { bookId: removeBookArgs.bookId } } },
+                { new: true }
+              );
+              if (!updatedUser) {
+                throw new AuthenticationError('Cannot find bookId.');
+              };
+              return updatedUser;
+            };
+            throw new AuthenticationError('Cannot find context.');
         },
     },
 };
