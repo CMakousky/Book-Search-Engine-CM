@@ -76,7 +76,10 @@ const resolvers = {
                 { $addToSet: { savedBooks: saveBookArgs } },
                 { new: true, runValidators: true }
               );
-              return updatedUser;
+              if (!updatedUser) {
+                throw new AuthenticationError(`Cannot add ${saveBookArgs}.`);
+              };
+              return updatedUser.savedBooks;
             };
             throw new AuthenticationError('Cannot find context.');
         },
@@ -91,7 +94,7 @@ const resolvers = {
               if (!updatedUser) {
                 throw new AuthenticationError('Cannot find bookId.');
               };
-              return updatedUser;
+              return updatedUser.savedBooks;
             };
             throw new AuthenticationError('Cannot find context.');
         },
