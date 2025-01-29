@@ -12,7 +12,6 @@ interface NewUserArgs {
     username: string;
     email: string;
     password: string;
-    // savedBooks: BookDocument[];
 }
 
 interface MyBooksArgs {
@@ -23,12 +22,15 @@ interface MyBooksArgs {
 const resolvers = {
     Query: {
         // get a single user by either their id or their username
-        me: async (_parent: any, { _id, username }: MyBooksArgs): Promise<UserDocument | null> => {
-            const params = _id ? { _id } : { username };
-            return User.findOne({
-              // $or: [{ _id: req.user ? req.user._id : req.params.id }, { username: req.params.username }],
-              $or: [{ _id: params._id }, { username: params.username }],
+        me: async (_parent: any, _args: MyBooksArgs, context: any): Promise<UserDocument | null> => {
+          if (context.user) {
+              // const params = _id ? { _id } : { username };
+              const params = { id: context.user.id, username: context.user.username };
+              return User.findOne({
+                $or: [{ _id: params.id }, { username: params.username }],
             });
+          };
+          throw new AuthenticationError('Could not authenticate user.');
         },
     },
     Mutation: {

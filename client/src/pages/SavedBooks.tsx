@@ -9,14 +9,6 @@ import { useMutation, useQuery } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
 
-interface JwtPayload {
-  data: {
-    _id: unknown,
-    username: string,
-    email: string,
-  };
-}
-
 const SavedBooks = () => {
   const [userData, setUserData] = useState<User>({
     username: '',
@@ -28,15 +20,14 @@ const SavedBooks = () => {
   // use this to determine if `useEffect()` hook needs to run again
   // const userDataLength = Object.keys(userData).length;
 
-  const profile: JwtPayload = Auth.getProfile() as JwtPayload;
-  // console.log("token:", profile);
-
-  const { loading, data, error, refetch } = useQuery(GET_ME, { variables: { _id: profile.data._id, username: profile.data.username } });
+  // Query to retrieve saved user data
+  const { loading, data, error, refetch } = useQuery(GET_ME);
 
   const getMe = refetch();
 
   const userProfileData = data;
   
+  // Mutation to delete a book from the user's favorites
   const [removeBook] = useMutation(REMOVE_BOOK);
 
   useEffect(() => {
