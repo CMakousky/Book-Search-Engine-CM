@@ -5,6 +5,8 @@
 
 A tool that assists avid readers in discovering and tracking new books to read.
 
+![plot](./images/Book-Search-Engine-CM-Screenshot.jpg)
+
 ## Table of Contents
 
 - [Installation](#installation)
