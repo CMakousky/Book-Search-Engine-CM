@@ -74,7 +74,7 @@ const SavedBooks = () => {
     try {
       const updatedSavedBooks = await removeBook({ variables: { bookId } });
 
-      if (error) {
+      if (updatedSavedBooks.errors) {
         throw new Error('something went wrong!');
       };
 
