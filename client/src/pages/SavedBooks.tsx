@@ -78,15 +78,15 @@ const SavedBooks = () => {
         throw new Error('something went wrong!');
       };
 
-      if (!loading) {
-        const user: User = {
-          username: userData.username,
-          email: userData.email,
-          password: '',
-          savedBooks: updatedSavedBooks.data.removeBook,
-        };
-        setUserData(user);
+      // Update the userData state with the new savedBooks array
+      const user: User = {
+        username: userData.username,
+        email: userData.email,
+        password: '',
+        savedBooks: updatedSavedBooks.data.removeBook,
       };
+
+      setUserData(user);
 
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
