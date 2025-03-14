@@ -21,9 +21,7 @@ const SavedBooks = () => {
   // const userDataLength = Object.keys(userData).length;
 
   // Query to retrieve saved user data
-  const { loading, data, error } = useQuery(GET_ME);
-
-  const userProfileData = data;
+  const { loading, data, error, refetch } = useQuery(GET_ME);
   
   // Mutation to delete a book from the user's favorites
   const [removeBook] = useMutation(REMOVE_BOOK);
@@ -37,7 +35,7 @@ const SavedBooks = () => {
           return false;
         }
 
-        await userProfileData.me;
+        await refetch();
 
         if (error) {
           throw new Error('something went wrong!');
@@ -46,15 +44,15 @@ const SavedBooks = () => {
         // if (loading) {
         //   console.log("Loading:", loading);
         // } else {
-        //   console.log("getUserData:", userProfileData);
+        //   console.log("me:", userProfileData);
         // };
         
         if (!loading) {
           const user: User = {
-            username: userProfileData.me.username,
-            email: userProfileData.me.email,
+            username: data.me.username,
+            email: data.me.email,
             password: '',
-            savedBooks: userProfileData.me.savedBooks,
+            savedBooks: data.me.savedBooks,
           };
           setUserData(user);
         };
@@ -82,8 +80,8 @@ const SavedBooks = () => {
 
       if (!loading) {
         const user: User = {
-          username: userProfileData.me.username,
-          email: userProfileData.me.email,
+          username: userData.username,
+          email: userData.email,
           password: '',
           savedBooks: updatedSavedBooks.data.removeBook,
         };
